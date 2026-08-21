@@ -1,0 +1,1547 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자기소개서 프롬프트 생성기</title>
+
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-light: #eff6ff;
+      --line: #dbe3ef;
+      --text: #172033;
+      --muted: #667085;
+      --bg: #f5f7fb;
+      --white: #ffffff;
+      --danger: #dc2626;
+      --shadow: 0 12px 32px rgba(30, 64, 175, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: white;
+      padding: 34px 20px;
+    }
+
+    .topbar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      opacity: 0.86;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.25;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      font-size: 18px;
+      opacity: 0.92;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 28px auto 56px;
+      padding: 0 18px;
+    }
+
+    .guide {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .guide strong {
+      color: var(--blue-dark);
+    }
+
+    .part {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .part-header {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .part-badge {
+      flex: 0 0 auto;
+      min-width: 76px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .part-title {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.35;
+    }
+
+    .part-desc {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .field {
+      margin-bottom: 26px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field-title {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .hint {
+      display: block;
+      margin: 6px 0 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .input,
+    textarea {
+      width: 100%;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      background: white;
+      padding: 14px 15px;
+      color: var(--text);
+      transition: 0.2s ease;
+    }
+
+    .input {
+      min-height: 52px;
+    }
+
+    textarea {
+      min-height: 108px;
+      resize: vertical;
+    }
+
+    .input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px;
+    }
+
+    .check-card {
+      position: relative;
+    }
+
+    .check-card input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .check-card label {
+      display: block;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+      background: white;
+      transition: 0.2s ease;
+    }
+
+    .check-card input:checked + label {
+      border-color: var(--blue);
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .subgrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .task-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .number {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+    }
+
+    .options {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .options h2 {
+      margin: 0 0 6px;
+      font-size: 23px;
+    }
+
+    .option-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .option-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .option-item input {
+      width: 20px;
+      height: 20px;
+      margin-top: 3px;
+      accent-color: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .option-item label {
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    .output-section {
+      background: #111827;
+      color: white;
+      border-radius: 22px;
+      padding: 26px;
+      margin-top: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .output-section h2 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    .output-section p {
+      margin: 0 0 16px;
+      color: #cbd5e1;
+    }
+
+    #promptOutput {
+      min-height: 420px;
+      background: #0b1220;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      line-height: 1.75;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 19px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-dark);
+    }
+
+    .btn-light {
+      background: white;
+      color: #172033;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 1px solid #64748b;
+    }
+
+    .btn-reset {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .message {
+      min-height: 24px;
+      margin-top: 10px;
+      font-weight: 700;
+      color: #bfdbfe;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      margin-top: 26px;
+    }
+
+    @media (max-width: 720px) {
+      .part {
+        padding: 20px;
+      }
+
+      .part-header {
+        display: block;
+      }
+
+      .part-badge {
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+
+      .subgrid {
+        grid-template-columns: 1fr;
+      }
+
+      .check-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .actions {
+        display: grid;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <span class="eyebrow">CAREER PARTNERS</span>
+      <h1>자기소개서 프롬프트 생성기</h1>
+      <p class="subtitle">
+        나의 경험을 입력하면 ChatGPT에 바로 사용할 수 있는 자기소개서 작성 프롬프트를 만들어 줍니다.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="guide">
+      <strong>작성 방법</strong><br />
+      완성된 문장으로 쓰지 않아도 됩니다. 생각나는 단어나 짧은 문장으로 적어도 괜찮습니다.
+      숫자가 정확히 기억나지 않으면 “약 30명”, “평균 100개 정도”처럼 작성하세요.
+    </section>
+
+    <form id="promptForm">
+
+      <!-- PART 1 -->
+      <section class="part">
+        <div class="part-header">
+          <div class="part-badge">PART 1</div>
+          <div>
+            <h2 class="part-title">인생의 가치관</h2>
+            <p class="part-desc">
+              내가 중요하게 생각하는 태도와 실제 경험을 정리합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-title">
+            ① 내가 중요하게 생각하는 태도는 무엇인가요?
+          </span>
+
+          <div class="check-grid" id="valueChecks">
+            <div class="check-card">
+              <input type="checkbox" id="value1" value="책임">
+              <label for="value1">책임</label>
+            </div>
+
+            <div class="check-card">
+              <input type="checkbox" id="value2" value="성실">
+              <label for="value2">성실</label>
+            </div>
+
+            <div class="check-card">
+              <input type="checkbox" id="value3" value="정직">
+              <label for="value3">정직</label>
+            </div>
+
+            <div class="check-card">
+              <input type="checkbox" id="value4" value="약속">
+              <label for="value4">약속</label>
+            </div>
+
+            <div class="check-card">
+              <input type="checkbox" id="value5" value="배려">
+              <label for="value5">배려</label>
+            </div>
+
+            <div class="check-card">
+              <input type="checkbox" id="value6" value="협력">
+              <label for="value6">협력</label>
+            </div>
+
+            <div class="check-card">
+              <input type="checkbox" id="value7" value="도전">
+              <label for="value7">도전</label>
+            </div>
+
+            <div class="check-card">
+              <input type="checkbox" id="value8" value="꾸준함">
+              <label for="value8">꾸준함</label>
+            </div>
+          </div>
+
+          <input
+            class="input"
+            id="valueOther"
+            type="text"
+            placeholder="기타 태도가 있다면 적어주세요."
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-title" for="valueCause">
+            ② 이런 생각을 갖게 된 계기는 무엇인가요?
+          </label>
+
+          <textarea
+            id="valueCause"
+            placeholder="예: 직장생활을 하면서 작은 약속을 지키는 사람이 신뢰를 얻는다는 것을 배웠습니다."
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label class="field-title" for="valueWhenWhere">
+            ③ 이 태도를 실천했던 경험은 무엇인가요?
+          </label>
+
+          <span class="hint">언제, 어디에서 있었나요?</span>
+
+          <textarea
+            id="valueWhenWhere"
+            placeholder="예: 2022년부터 2025년까지 ○○병원 내과에서 근무할 때"
+          ></textarea>
+
+          <span class="hint">무슨 일이 있었나요?</span>
+
+          <textarea
+            id="valueSituation"
+            placeholder="예: 환자가 몰리는 오전 시간에 대기 시간이 길어져 불만이 자주 발생했습니다."
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label class="field-title" for="valueAction">
+            ④ 그때 나는 어떻게 행동했나요?
+          </label>
+
+          <textarea
+            id="valueAction"
+            placeholder="예: 대기 순서를 다시 확인하고 예상 대기시간을 안내한 뒤, 진료실과 바로 소통했습니다."
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- PART 2 -->
+      <section class="part">
+        <div class="part-header">
+          <div class="part-badge">PART 2</div>
+
+          <div>
+            <h2 class="part-title">직무역량</h2>
+            <p class="part-desc">
+              내가 잘할 수 있는 일과 업무 경험을 구체적으로 정리합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-title" for="bestTask">
+            ① 내가 가장 잘할 수 있는 일은 무엇인가요?
+          </label>
+
+          <textarea
+            id="bestTask"
+            placeholder="예: 접수·수납, 환자 안내, 진료보조, 고객 응대"
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <span class="field-title">
+            ② 이 일을 언제, 어디에서 했나요?
+          </span>
+
+          <div class="subgrid">
+            <div>
+              <label class="hint" for="workplace">근무했던 곳</label>
+
+              <input
+                class="input"
+                id="workplace"
+                type="text"
+                placeholder="예: ○○병원 내과"
+              />
+            </div>
+
+            <div>
+              <label class="hint" for="workPeriod">
+                얼마 동안 일했나요?
+              </label>
+
+              <input
+                class="input"
+                id="workPeriod"
+                type="text"
+                placeholder="예: 4년, 2018년 3월~2022년 2월"
+              />
+            </div>
+          </div>
+
+          <label class="hint" for="workFrequency">
+            하루에 얼마나 자주 했나요?
+          </label>
+
+          <textarea
+            id="workFrequency"
+            placeholder="예: 하루 평균 환자 50명 접수, 하루 8시간 근무, 하루 제품 200개 검사"
+          ></textarea>
+
+          <label class="hint" for="workNumbers">
+            기억나는 숫자가 있다면 적어보세요.
+          </label>
+
+          <textarea
+            id="workNumbers"
+            placeholder="예: 고객 수, 생산량, 담당 인원, 거래처 수, 근무기간, 처리시간 등"
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <span class="field-title">③ 실제로 어떤 일을 했나요?</span>
+
+          <div class="task-list">
+            <div class="task-row">
+              <span class="number">1</span>
+              <input
+                class="input task-input"
+                type="text"
+                placeholder="첫 번째 업무"
+              />
+            </div>
+
+            <div class="task-row">
+              <span class="number">2</span>
+              <input
+                class="input task-input"
+                type="text"
+                placeholder="두 번째 업무"
+              />
+            </div>
+
+            <div class="task-row">
+              <span class="number">3</span>
+              <input
+                class="input task-input"
+                type="text"
+                placeholder="세 번째 업무"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-title" for="workFocus">
+            ④ 이 일을 잘하기 위해 내가 가장 신경 썼던 것은 무엇인가요?
+          </label>
+
+          <span class="hint">
+            예: 두 번 확인하기, 친절하게 설명하기, 시간을 지키기,
+            문제가 생기면 바로 보고하기
+          </span>
+
+          <textarea
+            id="workFocus"
+            placeholder="내가 실제로 신경 쓴 행동을 적어주세요."
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- PART 3 -->
+      <section class="part">
+        <div class="part-header">
+          <div class="part-badge">PART 3</div>
+
+          <div>
+            <h2 class="part-title">성격의 장점</h2>
+            <p class="part-desc">
+              나의 성격이 실제 행동으로 드러난 경험을 정리합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-title">
+            ① 나를 가장 잘 표현하는 장점은 무엇인가요?
+          </span>
+
+          <div class="check-grid" id="strengthChecks">
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="strength1"
+                value="책임감"
+              />
+              <label for="strength1">책임감</label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="strength2"
+                value="성실함"
+              />
+              <label for="strength2">성실함</label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="strength3"
+                value="꼼꼼함"
+              />
+              <label for="strength3">꼼꼼함</label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="strength4"
+                value="친절함"
+              />
+              <label for="strength4">친절함</label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="strength5"
+                value="끈기"
+              />
+              <label for="strength5">끈기</label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="strength6"
+                value="배려"
+              />
+              <label for="strength6">배려</label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="strength7"
+                value="협력"
+              />
+              <label for="strength7">협력</label>
+            </div>
+          </div>
+
+          <input
+            class="input"
+            id="strengthOther"
+            type="text"
+            placeholder="기타 장점이 있다면 적어주세요."
+          />
+        </div>
+
+        <div class="field">
+          <label
+            class="field-title"
+            for="strengthExperience"
+          >
+            ② 이 장점이 나타난 경험은 무엇인가요?
+          </label>
+
+          <textarea
+            id="strengthExperience"
+            placeholder="예: 바쁜 시간대에 동료의 업무까지 함께 처리했던 경험"
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label
+            class="field-title"
+            for="strengthSituation"
+          >
+            ③ 당시 어떤 상황이었나요?
+          </label>
+
+          <textarea
+            id="strengthSituation"
+            placeholder="예: 동료가 갑자기 결근해 업무가 평소보다 크게 늘어난 상황이었습니다."
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label
+            class="field-title"
+            for="strengthAction"
+          >
+            ④ 나는 어떻게 행동했고 결과는 어땠나요?
+          </label>
+
+          <span class="hint">행동</span>
+
+          <textarea
+            id="strengthAction"
+            placeholder="예: 우선순위를 정해 업무를 나누고, 접수와 안내 업무를 동시에 처리했습니다."
+          ></textarea>
+
+          <span class="hint">결과</span>
+
+          <textarea
+            id="strengthResult"
+            placeholder="예: 업무 지연 없이 마무리했고, 동료에게 믿고 맡길 수 있다는 평가를 받았습니다."
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- PART 4 -->
+      <section class="part">
+        <div class="part-header">
+          <div class="part-badge">PART 4</div>
+
+          <div>
+            <h2 class="part-title">
+              지원동기 및 입사 후 포부
+            </h2>
+
+            <p class="part-desc">
+              지원 이유와 입사 후 모습을 구체적으로 정리합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label
+            class="field-title"
+            for="companyName"
+          >
+            지원 회사와 직무
+          </label>
+
+          <div class="subgrid">
+            <input
+              class="input"
+              id="companyName"
+              type="text"
+              placeholder="지원 회사·기관"
+            />
+
+            <input
+              class="input"
+              id="jobName"
+              type="text"
+              placeholder="지원 직무"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-title">
+            ① 왜 이 회사에 지원하나요?
+          </span>
+
+          <div
+            class="check-grid"
+            id="motivationChecks"
+          >
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="motivation1"
+                value="이전 경험을 활용하고 싶어서"
+              />
+              <label for="motivation1">
+                이전 경험 활용
+              </label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="motivation2"
+                value="내가 잘하는 일이라서"
+              />
+              <label for="motivation2">
+                잘하는 일
+              </label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="motivation3"
+                value="오래 근무하고 싶어서"
+              />
+              <label for="motivation3">
+                장기근무
+              </label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="motivation4"
+                value="사람을 돕는 일이 좋아서"
+              />
+              <label for="motivation4">
+                사람을 돕는 일
+              </label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="motivation5"
+                value="새로운 일을 배우고 싶어서"
+              />
+              <label for="motivation5">
+                새로운 배움
+              </label>
+            </div>
+          </div>
+
+          <input
+            class="input"
+            id="motivationOther"
+            type="text"
+            placeholder="기타 지원 이유가 있다면 적어주세요."
+          />
+        </div>
+
+        <div class="field">
+          <label
+            class="field-title"
+            for="jobConnection"
+          >
+            ② 나의 어떤 경험이 이 직무와 연결되나요?
+          </label>
+
+          <textarea
+            id="jobConnection"
+            placeholder="예: 내과에서 접수·수납과 환자 안내를 담당한 경험이 지원 직무와 연결됩니다."
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <span class="field-title">
+            ③ 입사 후 어떤 직원이 되고 싶나요?
+          </span>
+
+          <div
+            class="check-grid"
+            id="futureChecks"
+          >
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="future1"
+                value="믿음직한 직원"
+              />
+              <label for="future1">
+                믿음직한 직원
+              </label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="future2"
+                value="성실한 직원"
+              />
+              <label for="future2">
+                성실한 직원
+              </label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="future3"
+                value="친절한 직원"
+              />
+              <label for="future3">
+                친절한 직원
+              </label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="future4"
+                value="배우는 직원"
+              />
+              <label for="future4">
+                배우는 직원
+              </label>
+            </div>
+
+            <div class="check-card">
+              <input
+                type="checkbox"
+                id="future5"
+                value="협력하는 직원"
+              />
+              <label for="future5">
+                협력하는 직원
+              </label>
+            </div>
+          </div>
+
+          <input
+            class="input"
+            id="futureOther"
+            type="text"
+            placeholder="기타 원하는 모습이 있다면 적어주세요."
+          />
+        </div>
+
+        <div class="field">
+          <label
+            class="field-title"
+            for="futureGoal"
+          >
+            ④ 입사 후 목표를 적어보세요.
+          </label>
+
+          <textarea
+            id="futureGoal"
+            placeholder="예: 업무를 빠르게 익히고, 환자와 동료 모두가 믿을 수 있는 직원이 되겠습니다."
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- 작성 기준 -->
+      <section class="part options">
+
+        <h2>자기소개서 작성 기준</h2>
+
+        <p class="part-desc">
+          선택한 기준이 생성되는 프롬프트에 자동으로 포함됩니다.
+        </p>
+
+        <div class="option-list">
+
+          <div class="option-item">
+            <input
+              type="checkbox"
+              id="ruleExpert"
+              checked
+            />
+
+            <label for="ruleExpert">
+              자기소개서 작성과 재취업 코칭 경험이 풍부한 전문가 역할을 부여합니다.
+            </label>
+          </div>
+
+          <div class="option-item">
+            <input
+              type="checkbox"
+              id="ruleAction"
+              checked
+            />
+
+            <label for="ruleAction">
+              책임감, 성실함 같은 추상적인 표현만 쓰지 않고 실제 행동으로 보여줍니다.
+            </label>
+          </div>
+
+          <div class="option-item">
+            <input
+              type="checkbox"
+              id="ruleNumber"
+              checked
+            />
+
+            <label for="ruleNumber">
+              근무기간, 고객 수, 생산량, 담당 인원 등 수치화 가능한 부분은 숫자로 표현합니다.
+            </label>
+          </div>
+
+          <div class="option-item">
+            <input
+              type="checkbox"
+              id="ruleSimple"
+              checked
+            />
+
+            <label for="ruleSimple">
+              문장은 간단하고 명료하게 쓰되 자신감 있는 어조를 유지합니다.
+            </label>
+          </div>
+
+          <div class="option-item">
+            <input
+              type="checkbox"
+              id="ruleTopDown"
+              checked
+            />
+
+            <label for="ruleTopDown">
+              각 항목은 핵심 결론부터 말하는 두괄식으로 작성합니다.
+            </label>
+          </div>
+
+          <div class="option-item">
+            <input
+              type="checkbox"
+              id="ruleNatural"
+              checked
+            />
+
+            <label for="ruleNatural">
+              AI가 자주 쓰는 과도하게 전문적이거나 화려한 단어를 피하고,
+              여성 지원자의 자연스러운 말투로 작성합니다.
+            </label>
+          </div>
+
+          <div class="option-item">
+            <input
+              type="checkbox"
+              id="ruleTruth"
+              checked
+            />
+
+            <label for="ruleTruth">
+              입력하지 않은 경험이나 수치를 임의로 만들지 않습니다.
+            </label>
+          </div>
+        </div>
+
+        <div
+          class="field"
+          style="margin-top:20px;"
+        >
+          <label
+            class="field-title"
+            for="lengthOption"
+          >
+            희망 분량
+          </label>
+
+          <select
+            class="input"
+            id="lengthOption"
+          >
+            <option value="각 항목 400자 안팎">
+              각 항목 400자 안팎
+            </option>
+
+            <option value="각 항목 500자 안팎">
+              각 항목 500자 안팎
+            </option>
+
+            <option value="각 항목 600자 안팎">
+              각 항목 600자 안팎
+            </option>
+
+            <option value="전체 1,500자 안팎">
+              전체 1,500자 안팎
+            </option>
+
+            <option value="분량 제한 없이 핵심 중심">
+              분량 제한 없이 핵심 중심
+            </option>
+          </select>
+        </div>
+
+        <div class="actions">
+
+          <button
+            class="btn btn-primary"
+            type="button"
+            id="generateBtn"
+          >
+            프롬프트 생성하기
+          </button>
+
+          <button
+            class="btn btn-reset"
+            type="reset"
+            id="resetBtn"
+          >
+            입력 내용 초기화
+          </button>
+
+        </div>
+      </section>
+    </form>
+
+    <!-- 출력 -->
+    <section class="output-section">
+
+      <h2>생성된 자기소개서 프롬프트</h2>
+
+      <p>
+        아래 내용을 복사해 ChatGPT, Gemini, Claude 등에 붙여 넣으세요.
+      </p>
+
+      <textarea
+        id="promptOutput"
+        readonly
+        placeholder="입력 내용을 작성한 뒤 ‘프롬프트 생성하기’를 눌러주세요."
+      ></textarea>
+
+      <div class="actions">
+
+        <button
+          class="btn btn-light"
+          type="button"
+          id="copyBtn"
+        >
+          프롬프트 복사
+        </button>
+
+        <button
+          class="btn btn-outline"
+          type="button"
+          id="downloadBtn"
+        >
+          텍스트 파일 저장
+        </button>
+
+      </div>
+
+      <div
+        class="message"
+        id="message"
+      ></div>
+
+    </section>
+
+    <p class="footer-note">
+      입력한 내용은 브라우저 안에서만 처리되며 별도의 서버로 전송되지 않습니다.
+    </p>
+
+  </main>
+
+  <script>
+
+    const $ = (id) => document.getElementById(id);
+
+    function value(id) {
+      return $(id).value.trim() || "입력하지 않음";
+    }
+
+    function checkedValues(containerId, otherId) {
+
+      const values = [
+        ...document.querySelectorAll(
+          `#${containerId} input[type="checkbox"]:checked`
+        )
+      ].map(el => el.value);
+
+      const other = $(otherId).value.trim();
+
+      if (other) {
+        values.push(other);
+      }
+
+      return values.length
+        ? values.join(", ")
+        : "입력하지 않음";
+    }
+
+    function taskValues() {
+
+      const tasks = [
+        ...document.querySelectorAll(".task-input")
+      ]
+        .map(el => el.value.trim())
+        .filter(Boolean);
+
+      return tasks.length
+        ? tasks
+            .map(
+              (task, index) =>
+                `${index + 1}. ${task}`
+            )
+            .join("\n")
+        : "입력하지 않음";
+    }
+
+    function selectedRules() {
+
+      const rules = [];
+
+      if ($("ruleExpert").checked) {
+        rules.push(
+          "당신은 자기소개서 작성과 재취업 코칭 경험이 풍부한 전문 컨설턴트입니다."
+        );
+      }
+
+      if ($("ruleAction").checked) {
+        rules.push(
+          "책임감, 성실함, 친절함 등의 추상적인 표현만 나열하지 말고, 지원자가 실제로 한 행동을 통해 역량이 드러나도록 작성하세요."
+        );
+      }
+
+      if ($("ruleNumber").checked) {
+        rules.push(
+          "근무기간, 고객 수, 생산량, 처리 건수, 담당 인원 등 수치화할 수 있는 정보는 가능한 범위에서 숫자로 표현하세요."
+        );
+      }
+
+      if ($("ruleSimple").checked) {
+        rules.push(
+          "문장은 간단하고 명료하게 작성하되, 지나치게 소극적이지 않도록 자신감 있는 어조를 사용하세요."
+        );
+      }
+
+      if ($("ruleTopDown").checked) {
+        rules.push(
+          "각 항목은 핵심 결론을 첫 문장에 제시하는 두괄식으로 작성하세요."
+        );
+      }
+
+      if ($("ruleNatural").checked) {
+        rules.push(
+          "AI가 자주 사용하는 과도하게 전문적이거나 화려한 단어를 피하고, 지원자가 실제로 말할 법한 자연스럽고 담백한 표현을 사용하세요."
+        );
+      }
+
+      if ($("ruleTruth").checked) {
+        rules.push(
+          "지원자가 입력하지 않은 경험, 성과, 수치, 자격, 직무 내용을 임의로 만들지 마세요. 정보가 부족하면 가장 자연스러운 범위에서 표현하되 사실을 추가하지 마세요."
+        );
+      }
+
+      return rules;
+    }
+
+    function buildPrompt() {
+
+      const rules = selectedRules();
+
+      return `[역할]
+${rules.length
+  ? rules[0]
+  : "당신은 자기소개서 작성 전문가입니다."}
+
+[작성 목표]
+아래 지원 정보와 경험 정보를 바탕으로 지원자의 자기소개서를 작성해 주세요.
+자기소개서 항목은 ① 인생의 가치관 ② 직무역량 ③ 성격의 장점 ④ 지원동기 및 입사 후 포부입니다.
+희망 분량은 ${$("lengthOption").value}입니다.
+
+[작성 원칙]
+${rules
+  .slice(1)
+  .map(
+    (rule, index) =>
+      `${index + 1}. ${rule}`
+  )
+  .join("\n") ||
+  "1. 입력된 사실을 중심으로 자연스럽게 작성하세요."}
+
+${rules.length > 1
+  ? rules.length
+  : 1}. 같은 내용이나 표현을 여러 항목에서 반복하지 마세요.
+
+${rules.length > 1
+  ? rules.length + 1
+  : 2}. 각 항목에는 제목을 붙이고, 완성된 자기소개서 문장만 제시하세요.
+
+${rules.length > 1
+  ? rules.length + 2
+  : 3}. 경험은 상황 설명보다 지원자가 실제로 취한 행동과 그 결과가 더 잘 드러나게 작성하세요.
+
+${rules.length > 1
+  ? rules.length + 3
+  : 4}. 부정적인 표현이나 경력 공백을 과도하게 강조하지 말고, 지금까지의 경험이 지원 직무에 어떻게 도움이 되는지 연결하세요.
+
+[지원 정보]
+- 지원 회사·기관: ${value("companyName")}
+- 지원 직무: ${value("jobName")}
+
+[PART 1. 인생의 가치관]
+- 중요하게 생각하는 태도: ${checkedValues(
+  "valueChecks",
+  "valueOther"
+)}
+- 이런 생각을 갖게 된 계기: ${value("valueCause")}
+- 경험이 있었던 시기와 장소: ${value("valueWhenWhere")}
+- 당시 상황: ${value("valueSituation")}
+- 그때 내가 한 행동: ${value("valueAction")}
+
+[PART 2. 직무역량]
+- 내가 가장 잘할 수 있는 일: ${value("bestTask")}
+- 근무했던 곳: ${value("workplace")}
+- 근무기간: ${value("workPeriod")}
+- 하루 업무 빈도 또는 업무량: ${value("workFrequency")}
+- 기억나는 수치: ${value("workNumbers")}
+- 실제 담당 업무:
+${taskValues()}
+- 일을 잘하기 위해 가장 신경 쓴 점: ${value("workFocus")}
+
+[PART 3. 성격의 장점]
+- 나를 가장 잘 표현하는 장점: ${checkedValues(
+  "strengthChecks",
+  "strengthOther"
+)}
+- 장점이 나타난 경험: ${value("strengthExperience")}
+- 당시 상황: ${value("strengthSituation")}
+- 내가 한 행동: ${value("strengthAction")}
+- 행동의 결과: ${value("strengthResult")}
+
+[PART 4. 지원동기 및 입사 후 포부]
+- 지원 이유: ${checkedValues(
+  "motivationChecks",
+  "motivationOther"
+)}
+- 지원 직무와 연결되는 경험: ${value("jobConnection")}
+- 입사 후 되고 싶은 직원: ${checkedValues(
+  "futureChecks",
+  "futureOther"
+)}
+- 입사 후 목표: ${value("futureGoal")}
+
+[최종 출력 형식]
+1. 인생의 가치관
+(완성된 자기소개서)
+
+2. 직무역량
+(완성된 자기소개서)
+
+3. 성격의 장점
+(완성된 자기소개서)
+
+4. 지원동기 및 입사 후 포부
+(완성된 자기소개서)
+
+마지막에는 자기소개서 내용에 사용된 핵심 경험과 수치를 3~5개로 짧게 정리해 주세요.`;
+
+    }
+
+    $("generateBtn").addEventListener(
+      "click",
+      () => {
+
+        $("promptOutput").value =
+          buildPrompt();
+
+        $("message").textContent =
+          "프롬프트가 생성되었습니다.";
+
+        $("promptOutput").scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+      }
+    );
+
+    $("copyBtn").addEventListener(
+      "click",
+      async () => {
+
+        const text =
+          $("promptOutput").value.trim();
+
+        if (!text) {
+          $("message").textContent =
+            "먼저 프롬프트를 생성해 주세요.";
+          return;
+        }
+
+        try {
+
+          await navigator.clipboard.writeText(
+            text
+          );
+
+          $("message").textContent =
+            "프롬프트를 복사했습니다.";
+
+        } catch (error) {
+
+          $("promptOutput").select();
+
+          document.execCommand("copy");
+
+          $("message").textContent =
+            "프롬프트를 복사했습니다.";
+        }
+
+      }
+    );
+
+    $("downloadBtn").addEventListener(
+      "click",
+      () => {
+
+        const text =
+          $("promptOutput").value.trim();
+
+        if (!text) {
+
+          $("message").textContent =
+            "먼저 프롬프트를 생성해 주세요.";
+
+          return;
+        }
+
+        const blob =
+          new Blob(
+            [text],
+            {
+              type:
+                "text/plain;charset=utf-8"
+            }
+          );
+
+        const url =
+          URL.createObjectURL(blob);
+
+        const anchor =
+          document.createElement("a");
+
+        anchor.href = url;
+
+        anchor.download =
+          "자기소개서_프롬프트.txt";
+
+        document.body.appendChild(anchor);
+
+        anchor.click();
+
+        anchor.remove();
+
+        URL.revokeObjectURL(url);
+
+        $("message").textContent =
+          "텍스트 파일로 저장했습니다.";
+
+      }
+    );
+
+    $("promptForm").addEventListener(
+      "reset",
+      () => {
+
+        setTimeout(
+          () => {
+
+            $("promptOutput").value = "";
+
+            $("message").textContent =
+              "입력 내용을 초기화했습니다.";
+
+          },
+          0
+        );
+
+      }
+    );
+
+  </script>
+
+</body>
+</html><script async src="/.netlify/scripts/hud" data-nf-variant="public" data-netlify-site-id="17e1094e-bbbb-43ad-8b76-3ebbf0abaea6" data-app-host="app.netlify.com"></script>
